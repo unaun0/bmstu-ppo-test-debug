@@ -1,0 +1,163 @@
+name: Run Tests and Generate Allure Report
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  test-and-report:
+    runs-on: ubuntu-22.04
+
+    env:
+      CONFIG_PATH: ./Shared/config.json
+      RUN_DIR: TestResults
+      ALLURE_HISTORY: allure-history
+      ALLURE_REPORT_DIR: allure-report
+
+    services:
+      postgres-test:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: testdb
+        ports:
+          - 5433:5432
+
+    steps:
+      # ---------- Checkout ----------
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      # ---------- Swift Setup ----------
+      - name: Set up Swift
+        uses: SwiftyLab/setup-swift@latest
+        with:
+          swift-version: "6.0"
+
+      - name: Show Swift version
+        run: swift --version
+
+      # ---------- Permissions ----------
+      - name: Set permissions for scripts
+        run: |
+          chmod +x src/TestScripts/*.sh
+          chmod +x src/TestScripts/*.py
+
+      # ---------- Database ----------
+      - name: Initialize database
+        working-directory: src
+        run: sh -x TestScripts/create_db.sh
+
+      # ---------- Build ----------
+      - name: Build tests
+        working-directory: src
+        run: swift build --build-tests
+
+      - name: Create results folder
+        run: mkdir -p "$RUN_DIR"
+
+      # ---------- UNIT TESTS ----------
+      - name: Run Unit Tests
+        working-directory: src
+        run: |
+          UNIT_TEST_EXIT_CODE=0
+          if ! swift test --skip-build \
+            --filter UnitTests \
+            --parallel \
+            --num-workers 8 \
+            --disable-swift-testing \
+            --xunit-output "../$RUN_DIR/unit-tests.xml"; then
+              UNIT_TEST_EXIT_CODE=1
+          fi
+          echo "UNIT_TEST_EXIT_CODE=$UNIT_TEST_EXIT_CODE" >> $GITHUB_ENV
+          python3 TestScripts/fix_report.py "../$RUN_DIR/unit-tests.xml" UnitTests || true
+
+      # ---------- INTEGRATION TESTS ----------
+      - name: Run Integration Tests
+        working-directory: src
+        run: |
+          IT_TEST_EXIT_CODE=0
+          if [ "$UNIT_TEST_EXIT_CODE" -ne 0 ]; then
+              python3 TestScripts/generate_skipped_report.py IntegrationTests "../$RUN_DIR/integration-tests.xml" || true
+              IT_TEST_EXIT_CODE=$UNIT_TEST_EXIT_CODE
+          else
+              sh TestScripts/clean_db.sh || exit 1
+              if ! swift test --skip-build \
+                --filter IntegrationTests \
+                --parallel \
+                --num-workers 1 \
+                --disable-swift-testing \
+                --xunit-output "../$RUN_DIR/integration-tests.xml"; then
+                  IT_TEST_EXIT_CODE=1
+              fi
+              sh TestScripts/clean_db.sh || true
+          fi
+          echo "IT_TEST_EXIT_CODE=$IT_TEST_EXIT_CODE" >> $GITHUB_ENV
+          python3 TestScripts/fix_report.py "../$RUN_DIR/integration-tests.xml" IntegrationTests || true
+
+      # ---------- E2E TESTS ----------
+      - name: Run E2E Tests
+        working-directory: src
+        run: |
+          E2E_TEST_EXIT_CODE=0
+          if [ "$IT_TEST_EXIT_CODE" -ne 0 ]; then
+              python3 TestScripts/generate_skipped_report.py E2ETests "../$RUN_DIR/e2e-tests.xml" || true
+              E2E_TEST_EXIT_CODE=$IT_TEST_EXIT_CODE
+          else
+              sh TestScripts/clean_db.sh || exit 1
+              if ! swift test --skip-build \
+                --filter E2ETests \
+                --parallel \
+                --num-workers 1 \
+                --disable-swift-testing \
+                --xunit-output "../$RUN_DIR/e2e-tests.xml"; then
+                  E2E_TEST_EXIT_CODE=1
+              fi
+              sh TestScripts/clean_db.sh || true
+          fi
+          echo "E2E_TEST_EXIT_CODE=$E2E_TEST_EXIT_CODE" >> $GITHUB_ENV
+          python3 TestScripts/fix_report.py "../$RUN_DIR/e2e-tests.xml" E2ETests || true
+
+      # ---------- Upload Test Results ----------
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: ${{ env.RUN_DIR }}
+
+      # ---------- Generate Allure Report ----------
+      - name: Load test report history
+        uses: actions/checkout@v3
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: ${{ env.ALLURE_HISTORY }}
+
+      - name: Build Allure Report
+        uses: simple-elf/allure-report-action@v1.7
+        if: always()
+        with:
+          gh_pages: ${{ env.ALLURE_HISTORY }}
+          allure_results: ${{ env.RUN_DIR }}
+          allure_history: ${{ env.ALLURE_REPORT_DIR }}
+
+      - name: Publish Allure Report
+        uses: peaceiris/actions-gh-pages@v3
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ${{ env.ALLURE_REPORT_DIR }}
+
+      # ---------- Fail if any test failed ----------
+      - name: Fail if any test failed
+        run: |
+          if [ "$UNIT_TEST_EXIT_CODE" -ne 0 ] || [ "$IT_TEST_EXIT_CODE" -ne 0 ] || [ "$E2E_TEST_EXIT_CODE" -ne 0 ]; then
+            exit 1
+          fi
