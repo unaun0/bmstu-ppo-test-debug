@@ -1,7 +1,7 @@
 # .swiftlint.yml
 
 included:
-  - Sources
+  - src/Sources
 
 cyclomatic_complexity:
   error: 10
