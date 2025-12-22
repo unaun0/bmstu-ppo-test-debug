@@ -5,9 +5,9 @@
 //  Created by Цховребова Яна on 11.04.2025.
 //
 
+import Domain
 import Fluent
 import Vapor
-import Domain
 
 public final class UserDBDTO: Model {
     public static let schema = "User"
@@ -35,7 +35,7 @@ public final class UserDBDTO: Model {
 
     @Field(key: "birth_date")
     public var birthDate: Date
-    
+
     @Field(key: "role")
     public var role: String
 

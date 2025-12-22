@@ -5,9 +5,9 @@
 //  Created by Цховребова Яна on 13.04.2025.
 //
 
+import Domain
 import Fluent
 import Vapor
-import Domain
 
 public final class TrainerDBDTO: Model {
     public static let schema = "Trainer"
@@ -33,7 +33,7 @@ extension TrainerDBDTO {
         description: String
     ) {
         self.init()
-        
+
         self.id = id
         self.userId = userId
         self.description = description
@@ -53,7 +53,7 @@ extension TrainerDBDTO: Content {}
 extension TrainerDBDTO {
     public convenience init(from trainer: Trainer) {
         self.init()
-        
+
         self.id = trainer.id
         self.userId = trainer.userId
         self.description = trainer.description
@@ -61,7 +61,7 @@ extension TrainerDBDTO {
 
     public func toTrainer() -> Trainer? {
         guard let id = self.id else { return nil }
-        
+
         return Trainer(
             id: id,
             userId: userId,

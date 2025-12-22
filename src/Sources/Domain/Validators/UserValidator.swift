@@ -14,12 +14,12 @@ public struct UserValidator {
     public static let maxGenderLength = 32
     public static let maxYearsOld = 120
     public static let minYearsOld = 14
-    
+
     public static func validate(email: String) -> Bool {
         guard
             !email.isEmpty, email.count < maxEmailLength
         else { return false }
-        
+
         return isValidRegex(
             email,
             regex: ValidationRegex.Email.regex
@@ -31,7 +31,7 @@ public struct UserValidator {
             !password.isEmpty,
             password.count < maxPasswordLength
         else { return false }
-        
+
         return isValidRegex(
             password,
             regex: ValidationRegex.Password.regex
@@ -43,7 +43,7 @@ public struct UserValidator {
             !phoneNumber.isEmpty,
             phoneNumber.count < maxPhoneNumberLength
         else { return false }
-        
+
         return isValidRegex(
             phoneNumber,
             regex: ValidationRegex.PhoneNumber.regex
@@ -55,7 +55,7 @@ public struct UserValidator {
             !name.isEmpty,
             name.count < maxNameLength
         else { return false }
-        
+
         return isValidRegex(
             name,
             regex: ValidationRegex.Name.regex
@@ -65,12 +65,14 @@ public struct UserValidator {
     public static func validate(date: Date) -> Bool {
         let calendar = Calendar.current
         let ageComponents = calendar.dateComponents(
-            [.year], from: date, to: Date()
+            [.year],
+            from: date,
+            to: Date()
         )
         guard
             let age = ageComponents.year
         else { return false }
-        
+
         return age >= minYearsOld && age <= maxYearsOld
     }
 
@@ -81,7 +83,7 @@ public struct UserValidator {
                 format: ValidationRegex.DateFormat.format
             )
         else { return false }
-        
+
         return validate(date: date)
     }
 
@@ -90,10 +92,10 @@ public struct UserValidator {
             !gender.isEmpty,
             gender.count < maxGenderLength
         else { return false }
-        
+
         return UserGender(rawValue: gender) != nil
     }
-    
+
     public static func validate(roleName: String) -> Bool {
         UserRoleName(rawValue: roleName) != nil
     }

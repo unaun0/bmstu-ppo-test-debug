@@ -8,7 +8,7 @@
 public final class AuthService: IAuthService {
     private let userService: IUserService
     private let passwordHasher: IHasherService
-    
+
     public init(
         userService: IUserService,
         passwordHasher: IHasherService
@@ -16,11 +16,11 @@ public final class AuthService: IAuthService {
         self.userService = userService
         self.passwordHasher = passwordHasher
     }
-    
+
     public func register(_ data: RegisterDTO) async throws -> User? {
         try await userService.create(UserCreateDTO(from: data))
     }
-    
+
     public func login(_ data: LoginDTO) async throws -> User? {
         var foundUser = try await userService.find(email: data.login)
         if foundUser == nil {

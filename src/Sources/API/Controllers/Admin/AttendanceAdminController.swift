@@ -5,9 +5,9 @@
 //  Created by Цховребова Яна on 12.05.2025.
 //
 
+import Domain
 import Vapor
 import VaporToOpenAPI
-import Domain
 
 public final class AttendanceAdminController: RouteCollection {
     private let service: IAttendanceService
@@ -34,11 +34,23 @@ public final class AttendanceAdminController: RouteCollection {
     }
 
     public func boot(routes: RoutesBuilder) throws {
-        let routes = routes.grouped(
-            "admin",
-            "attendances"
-        ).grouped(jwtMiddleware, adminMiddleware)
+        let attendanceRoutes = setupRoutes(routes)
+        registerGetRoutes(attendanceRoutes)
+        registerDeleteRoutes(attendanceRoutes)
+        registerPostRoutes(attendanceRoutes)
+        registerPutRoutes(attendanceRoutes)
+    }
+}
 
+// MARK: - Route Registration
+
+extension AttendanceAdminController {
+    fileprivate func setupRoutes(_ routes: RoutesBuilder) -> RoutesBuilder {
+        routes.grouped("admin", "attendances")
+            .grouped(jwtMiddleware, adminMiddleware)
+    }
+
+    fileprivate func registerGetRoutes(_ routes: RoutesBuilder) {
         routes.get("all", use: getAll).openAPI(
             tags: .init(name: "Admin - Attendance"),
             summary: "Получить все посещения для администратора",
@@ -57,17 +69,10 @@ public final class AttendanceAdminController: RouteCollection {
             auth: .bearer()
         )
 
-        routes.grouped(uuidMiddleware).delete(":id", use: deleteById).openAPI(
-            tags: .init(name: "Admin - Attendance"),
-            summary: "Удалить посещение по ID для администратора",
-            description:
-                "Удаляет посещение по UUID. Требует прав администратора.",
-            response: .type(HTTPStatus.self),
-            auth: .bearer()
-        )
-
         routes.grouped(uuidMiddleware).get(
-            "training", ":training-id", use: getByTrainingId
+            "training",
+            ":training-id",
+            use: getByTrainingId
         ).openAPI(
             tags: .init(name: "Admin - Attendance"),
             summary: "Получить посещения по тренировке для администратора",
@@ -78,7 +83,9 @@ public final class AttendanceAdminController: RouteCollection {
         )
 
         routes.grouped(uuidMiddleware).get(
-            "membership", ":membership-id", use: getByMembershipId
+            "membership",
+            ":membership-id",
+            use: getByMembershipId
         ).openAPI(
             tags: .init(name: "Admin - Attendance"),
             summary: "Получить посещения по абонементу для администратора",
@@ -87,7 +94,20 @@ public final class AttendanceAdminController: RouteCollection {
             response: .type([AttendanceDTO].self),
             auth: .bearer()
         )
+    }
 
+    fileprivate func registerDeleteRoutes(_ routes: RoutesBuilder) {
+        routes.grouped(uuidMiddleware).delete(":id", use: deleteById).openAPI(
+            tags: .init(name: "Admin - Attendance"),
+            summary: "Удалить посещение по ID для администратора",
+            description:
+                "Удаляет посещение по UUID. Требует прав администратора.",
+            response: .type(HTTPStatus.self),
+            auth: .bearer()
+        )
+    }
+
+    fileprivate func registerPostRoutes(_ routes: RoutesBuilder) {
         routes.grouped(createMiddleware).post(use: create).openAPI(
             tags: .init(name: "Admin - Attendance"),
             summary: "Создать посещение для администратора",
@@ -95,7 +115,9 @@ public final class AttendanceAdminController: RouteCollection {
             response: .type(AttendanceDTO.self),
             auth: .bearer()
         )
+    }
 
+    fileprivate func registerPutRoutes(_ routes: RoutesBuilder) {
         routes.grouped(uuidMiddleware, updateMiddleware).put(":id", use: update)
             .openAPI(
                 tags: .init(name: "Admin - Attendance"),
@@ -149,7 +171,9 @@ extension AttendanceAdminController {
     func getByMembershipId(req: Request) async throws -> Response {
         try await service.find(
             membershipId: try req.parameters.require(
-                "membership-id", as: UUID.self)
+                "membership-id",
+                as: UUID.self
+            )
         ).map(AttendanceDTO.init(from:))
             .encodeResponse(status: .ok, for: req)
     }

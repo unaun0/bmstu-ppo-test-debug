@@ -5,9 +5,9 @@
 //  Created by Цховребова Яна on 18.04.2025.
 //
 
+import Domain
 import Fluent
 import Vapor
-import Domain
 
 public final class MembershipRepository {
     private let db: Database
@@ -79,7 +79,7 @@ extension MembershipRepository: IMembershipRepository {
         else {
             throw MembershipRepositoryError.membershipNotFound
         }
-        
+
         try await membership.delete(on: db)
     }
 }

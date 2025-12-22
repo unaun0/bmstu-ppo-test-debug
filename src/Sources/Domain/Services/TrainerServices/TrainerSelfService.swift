@@ -24,4 +24,3 @@ extension TrainerSelfService: ITrainerSelfService {
         try await tService.find(userId: userId)
     }
 }
-

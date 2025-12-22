@@ -5,14 +5,14 @@
 //  Created by Цховребова Яна on 10.05.2025.
 //
 
+import Domain
 import Vapor
 import VaporToOpenAPI
-import Domain
 
 public final class TrainingUserController: RouteCollection {
     private let trainingService: ITrainingUserService
     private let jwtMiddleware: JWTMiddleware
-    
+
     public init(
         trainingService: ITrainingUserService,
         jwtMiddleware: JWTMiddleware
@@ -20,10 +20,11 @@ public final class TrainingUserController: RouteCollection {
         self.trainingService = trainingService
         self.jwtMiddleware = jwtMiddleware
     }
-    
+
     public func boot(routes: RoutesBuilder) throws {
         let trainingRoutes = routes.grouped(
-            "user", "trainings"
+            "user",
+            "trainings"
         ).grouped(
             jwtMiddleware
         )

@@ -5,12 +5,12 @@
 //  Created by Цховребова Яна on 11.03.2025.
 //
 
-import Vapor
 import Fluent
+import Vapor
 
 public final class TrainerService {
     private let repository: ITrainerRepository
-    
+
     public init(repository: ITrainerRepository) {
         self.repository = repository
     }
@@ -29,7 +29,7 @@ extension TrainerService: ITrainerService {
             description: data.description
         )
         try await repository.create(trainer)
-        
+
         return trainer
     }
 
@@ -49,7 +49,7 @@ extension TrainerService: ITrainerService {
             trainer.description = description
         }
         try await repository.update(trainer)
-        
+
         return trainer
     }
 
@@ -66,7 +66,7 @@ extension TrainerService: ITrainerService {
     }
 
     public func delete(id: UUID) async throws {
-        guard let _ = try await repository.find(id: id) else {
+        guard (try await repository.find(id: id)) != nil else {
             throw TrainerError.trainerNotFound
         }
         try await repository.delete(id: id)

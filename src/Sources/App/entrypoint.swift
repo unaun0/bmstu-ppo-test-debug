@@ -25,10 +25,8 @@ enum Entrypoint {
         )
         let app = try await Application.make(env)
         app.setAppConfig(appConfig)
-        
         app.http.server.configuration.hostname = "127.0.0.1"
         app.http.server.configuration.port = 8010
-        
         do {
             try await configure(app)
             try await app.execute()

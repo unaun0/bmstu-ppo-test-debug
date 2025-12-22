@@ -76,7 +76,7 @@ public struct TrainingInfoDTO: Content {
     public var date: String
     public var trainer: TrainerInfoDTO
     public var room: TrainingRoomDTO
-    
+
     public init(
         id: UUID,
         date: Date,
@@ -91,4 +91,3 @@ public struct TrainingInfoDTO: Content {
         self.trainer = trainer
     }
 }
-

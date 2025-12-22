@@ -5,12 +5,12 @@
 //  Created by Цховребова Яна on 13.04.2025.
 //
 
-import Vapor
 import Domain
+import Vapor
 
 public struct MembershipTypeCreateValidationMiddleware: AsyncMiddleware {
     public init() {}
-    
+
     public func respond(
         to request: Request,
         chainingTo next: AsyncResponder
@@ -32,7 +32,7 @@ public struct MembershipTypeCreateValidationMiddleware: AsyncMiddleware {
             guard
                 MembershipTypeValidator.validate(days: days)
             else { throw MembershipTypeError.invalidDays }
-            
+
             return try await next.respond(to: request)
         } catch { throw error }
     }

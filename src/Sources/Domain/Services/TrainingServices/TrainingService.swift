@@ -10,7 +10,7 @@ import Vapor
 
 public final class TrainingService {
     private let repository: ITrainingRepository
-    
+
     public init(repository: ITrainingRepository) {
         self.repository = repository
     }
@@ -20,9 +20,11 @@ public final class TrainingService {
 
 extension TrainingService: ITrainingService {
     public func create(_ data: TrainingCreateDTO) async throws -> Training? {
-        guard let date = data.date?.toDate(
-            format: ValidationRegex.DateFormat.format
-        ) else {
+        guard
+            let date = data.date?.toDate(
+                format: ValidationRegex.DateFormat.format
+            )
+        else {
             throw TrainingError.invalidDate
         }
         let training = Training(
@@ -32,7 +34,7 @@ extension TrainingService: ITrainingService {
             trainerId: data.trainerId
         )
         try await repository.create(training)
-        
+
         return training
     }
 
@@ -44,9 +46,11 @@ extension TrainingService: ITrainingService {
             throw TrainingError.trainerNotFound
         }
         if let dateString = data.date {
-            guard let date = dateString.toDate(
-                format: ValidationRegex.DateFormat.format
-            ) else {
+            guard
+                let date = dateString.toDate(
+                    format: ValidationRegex.DateFormat.format
+                )
+            else {
                 throw TrainingError.invalidDate
             }
             training.date = date
@@ -58,7 +62,7 @@ extension TrainingService: ITrainingService {
             training.trainerId = trainer
         }
         try await repository.update(training)
-        
+
         return training
     }
 
@@ -86,7 +90,7 @@ extension TrainingService: ITrainingService {
 
     public func delete(id: UUID) async throws {
         guard
-            let _ = try await repository.find(id: id)
+            (try await repository.find(id: id)) != nil
         else {
             throw TrainingError.trainingNotFound
         }

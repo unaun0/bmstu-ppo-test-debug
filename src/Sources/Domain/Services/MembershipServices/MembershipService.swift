@@ -18,11 +18,12 @@ public final class MembershipService: IMembershipService {
         self.membershipRepository = membershipRepository
         self.membershipTypeService = membershipTypeService
     }
-    
+
     public func create(_ data: MembershipCreateDTO) async throws -> Membership? {
-        guard let mt = try await membershipTypeService.find(
-            id: data.membershipTypeId
-        )
+        guard
+            let mt = try await membershipTypeService.find(
+                id: data.membershipTypeId
+            )
         else {
             throw MembershipError.invalidMembershipTypeId
         }
@@ -37,7 +38,7 @@ public final class MembershipService: IMembershipService {
         try await membershipRepository.create(membership)
         return membership
     }
-    
+
     public func update(
         id: UUID,
         with data: MembershipUpdateDTO
@@ -64,7 +65,7 @@ public final class MembershipService: IMembershipService {
             membership.availableSessions = availableSessions
         }
         try await membershipRepository.update(membership)
-        
+
         return membership
     }
 
@@ -88,7 +89,7 @@ public final class MembershipService: IMembershipService {
 
     public func delete(id: UUID) async throws {
         guard
-            let _ = try await membershipRepository.find(id: id)
+            (try await membershipRepository.find(id: id)) != nil
         else {
             throw MembershipError.membershipNotFound
         }

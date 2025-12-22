@@ -10,7 +10,7 @@ import Vapor
 
 public final class TrainingRoomService {
     private let repository: ITrainingRoomRepository
-    
+
     public init(repository: ITrainingRoomRepository) {
         self.repository = repository
     }
@@ -29,7 +29,7 @@ extension TrainingRoomService: ITrainingRoomService {
             capacity: data.capacity
         )
         try await repository.create(room)
-        
+
         return room
     }
 
@@ -49,7 +49,7 @@ extension TrainingRoomService: ITrainingRoomService {
             room.capacity = capacity
         }
         try await repository.update(room)
-        
+
         return room
     }
 
@@ -70,7 +70,7 @@ extension TrainingRoomService: ITrainingRoomService {
     }
 
     public func delete(id: UUID) async throws {
-        guard let _ = try await repository.find(id: id) else {
+        guard (try await repository.find(id: id)) != nil else {
             throw TrainingRoomError.trainingRoomNotFound
         }
         try await repository.delete(id: id)

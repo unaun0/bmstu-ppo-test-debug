@@ -5,9 +5,9 @@
 //  Created by Цховребова Яна on 13.04.2025.
 //
 
+import Domain
 import Fluent
 import Vapor
-import Domain
 
 public final class TrainerRepository {
     private let db: Database

@@ -5,9 +5,9 @@
 //  Created by Цховребова Яна on 10.05.2025.
 //
 
+import Domain
 import Vapor
 import VaporToOpenAPI
-import Domain
 
 public final class TrainingTrainerController: RouteCollection {
     private let trainingService: ITrainingTrainerService
@@ -16,7 +16,7 @@ public final class TrainingTrainerController: RouteCollection {
     private let createMiddleware: TrainingCreateValidationMiddleware
     private let updateMiddleware: TrainingValidationMiddleware
     private let uuidMiddleware: UUIDValidationMiddleware
-    
+
     public init(
         trainingService: ITrainingTrainerService,
         jwtMiddleware: JWTMiddleware,
@@ -32,10 +32,11 @@ public final class TrainingTrainerController: RouteCollection {
         self.updateMiddleware = updateMiddleware
         self.uuidMiddleware = uuidMiddleware
     }
-    
+
     public func boot(routes: RoutesBuilder) throws {
         let trainingRoutes = routes.grouped(
-            "trainer", "trainings"
+            "trainer",
+            "trainings"
         ).grouped(
             jwtMiddleware
         ).grouped(
@@ -77,7 +78,7 @@ extension TrainingTrainerController {
             userId: req.auth.require(User.self).id
         ).encodeResponse(status: .ok, for: req)
     }
-    
+
     @Sendable
     func getAllCurrentTrainings(
         req: Request

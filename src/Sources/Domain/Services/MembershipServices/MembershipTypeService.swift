@@ -80,8 +80,7 @@ public final class MembershipTypeService: IMembershipTypeService {
     }
 
     public func delete(id: UUID) async throws {
-        guard
-            let _ = try await repository.find(id: id)
+        guard try await repository.find(id: id) != nil
         else {
             throw MembershipTypeError.membershipTypeNotFound
         }

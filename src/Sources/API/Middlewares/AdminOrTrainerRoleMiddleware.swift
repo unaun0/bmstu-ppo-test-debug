@@ -5,8 +5,8 @@
 //  Created by Цховребова Яна on 20.03.2025.
 //
 
-import Vapor
 import Domain
+import Vapor
 
 public struct AdminOrTrainerRoleMiddleware: AsyncMiddleware {
     private let adminMiddleware: AdminRoleMiddleware

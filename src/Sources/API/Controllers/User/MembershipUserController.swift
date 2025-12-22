@@ -5,9 +5,9 @@
 //  Created by Цховребова Яна on 11.05.2025.
 //
 
+import Domain
 import Vapor
 import VaporToOpenAPI
-import Domain
 
 public final class MembershipUserController: RouteCollection {
     private let service: IMembershipService
@@ -22,7 +22,8 @@ public final class MembershipUserController: RouteCollection {
     }
 
     public func boot(routes: RoutesBuilder) throws {
-        let routes = routes
+        let routes =
+            routes
             .grouped("user", "memberships")
             .grouped(jwtMiddleware)
 

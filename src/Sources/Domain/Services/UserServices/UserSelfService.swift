@@ -9,7 +9,7 @@ import Vapor
 
 public final class UserSelfService {
     private let userService: IUserService
-    
+
     public init(userService: IUserService) {
         self.userService = userService
     }
@@ -26,10 +26,12 @@ extension UserSelfService: IUserSelfService {
     }
 
     public func updateMyProfile(id: UUID, data: UserSelfUpdateDTO) async throws -> User? {
-        guard let updated = try await userService.update(
-            id: id,
-            with: UserUpdateDTO(from: data)
-        ) else {
+        guard
+            let updated = try await userService.update(
+                id: id,
+                with: UserUpdateDTO(from: data)
+            )
+        else {
             throw UserError.userNotFound
         }
         return updated

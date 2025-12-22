@@ -5,8 +5,8 @@
 //  Created by Цховребова Яна on 18.04.2025.
 //
 
-import Vapor
 import Domain
+import Vapor
 
 public struct AttendanceCreateValidationMiddleware: AsyncMiddleware {
     public func respond(
@@ -31,6 +31,6 @@ public struct AttendanceCreateValidationMiddleware: AsyncMiddleware {
             return try await next.respond(to: request)
         } catch { throw error }
     }
-    
+
     public init() {}
 }

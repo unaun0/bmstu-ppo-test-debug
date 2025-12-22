@@ -25,44 +25,65 @@ public final class UserSelfController: RouteCollection {
     }
 
     public func boot(routes: RoutesBuilder) throws {
-        let userRoutes = routes.grouped("user").grouped(jwtMiddleware)
-        userRoutes.get(
-            "me", use: getProfile
-        ).openAPI(
-            tags: .init(name: "User - Profile"),
-            summary: "Получить профиль пользователя",
-            description:
-                "Возвращает информацию о текущем пользователе по его ID.",
-            response: .type(UserDTO.self),
-            auth: .bearer()
-        )
-        userRoutes.grouped(validationMiddleware).put(
-            "me", use: updateProfile
-        ).openAPI(
-            tags: .init(name: "User - Profile"),
-            summary: "Обновить профиль пользователя",
-            description: "Позволяет пользователю обновить свою информацию.",
-            body: .type(UserSelfUpdateDTO.self),
-            response: .type(UserDTO.self),
-            auth: .bearer()
-        )
-        userRoutes.delete(
-            "me", use: deleteProfile
-        ).openAPI(
-            tags: .init(name: "User - Profile"),
-            summary: "Удалить профиль пользователя",
-            description: "Удаляет профиль текущего пользователя.",
-            response: .type(HTTPStatus.self),
-            auth: .bearer()
-        )
-        userRoutes.get(
-            "role", use: getRole
-        ).openAPI(
-            tags: .init(name: "User - Profile"),
-            summary: "Получить роль пользователя",
-            response: .type(String.self),
-            auth: .bearer()
-        )
+        let userRoutes = setupRoutes(routes)
+        registerGetProfileRoute(userRoutes)
+        registerUpdateProfileRoute(userRoutes)
+        registerDeleteProfileRoute(userRoutes)
+        registerGetRoleRoute(userRoutes)
+    }
+}
+
+// MARK: - Route Registration
+
+extension UserSelfController {
+    private func setupRoutes(_ routes: RoutesBuilder) -> RoutesBuilder {
+        routes.grouped("user").grouped(jwtMiddleware)
+    }
+
+    private func registerGetProfileRoute(_ routes: RoutesBuilder) {
+        routes.get("me", use: getProfile)
+            .openAPI(
+                tags: .init(name: "User - Profile"),
+                summary: "Получить профиль пользователя",
+                description:
+                    "Возвращает информацию о текущем пользователе по его ID.",
+                response: .type(UserDTO.self),
+                auth: .bearer()
+            )
+    }
+
+    private func registerUpdateProfileRoute(_ routes: RoutesBuilder) {
+        routes.grouped(validationMiddleware)
+            .put("me", use: updateProfile)
+            .openAPI(
+                tags: .init(name: "User - Profile"),
+                summary: "Обновить профиль пользователя",
+                description: "Позволяет пользователю обновить свою информацию.",
+                body: .type(UserSelfUpdateDTO.self),
+                response: .type(UserDTO.self),
+                auth: .bearer()
+            )
+    }
+
+    private func registerDeleteProfileRoute(_ routes: RoutesBuilder) {
+        routes.delete("me", use: deleteProfile)
+            .openAPI(
+                tags: .init(name: "User - Profile"),
+                summary: "Удалить профиль пользователя",
+                description: "Удаляет профиль текущего пользователя.",
+                response: .type(HTTPStatus.self),
+                auth: .bearer()
+            )
+    }
+
+    private func registerGetRoleRoute(_ routes: RoutesBuilder) {
+        routes.get("role", use: getRole)
+            .openAPI(
+                tags: .init(name: "User - Profile"),
+                summary: "Получить роль пользователя",
+                response: .type(String.self),
+                auth: .bearer()
+            )
     }
 }
 
@@ -105,7 +126,9 @@ extension UserSelfController {
         let userId = try req.auth.require(User.self).id
         guard
             let updatedUser = try await service.updateMyProfile(
-                id: userId, data: dto)
+                id: userId,
+                data: dto
+            )
         else { throw UserError.updateFailed }
 
         return try await UserDTO(from: updatedUser)

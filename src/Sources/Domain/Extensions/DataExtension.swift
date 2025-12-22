@@ -19,7 +19,7 @@ extension Date {
     public func yearsAgo(_ years: Int) -> Date {
         Calendar.current.date(byAdding: .year, value: -years, to: Date())!
     }
-    
+
     public var onlyDate: Date {
         let calendar = Calendar.current
         return calendar.date(

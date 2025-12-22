@@ -17,13 +17,13 @@ public final class JWTService: IJWTService {
     public func generateToken(
         for uuid: UUID,
         req: Request
-    )
-        throws -> String
-    {
+    ) throws -> String {
         try req.jwt.sign(
             AuthPayload(
                 id: uuid,
-                exp: .init(value: Date().addingTimeInterval(self.expirationTime))
+                exp: .init(
+                    value: Date().addingTimeInterval(self.expirationTime)
+                )
             )
         )
     }

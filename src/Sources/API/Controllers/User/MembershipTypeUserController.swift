@@ -5,14 +5,14 @@
 //  Created by Цховребова Яна on 11.05.2025.
 //
 
+import Domain
 import Vapor
 import VaporToOpenAPI
-import Domain
 
 public final class MembershipTypeUserController: RouteCollection {
     private let service: IMembershipTypeService
     private let jwtMiddleware: JWTMiddleware
-    
+
     public init(
         service: IMembershipTypeService,
         jwtMiddleware: JWTMiddleware
@@ -20,10 +20,11 @@ public final class MembershipTypeUserController: RouteCollection {
         self.service = service
         self.jwtMiddleware = jwtMiddleware
     }
-    
+
     public func boot(routes: RoutesBuilder) throws {
         let membershipTypeRoutes = routes.grouped(
-            "user", "membership-types"
+            "user",
+            "membership-types"
         ).grouped(
             jwtMiddleware
         )

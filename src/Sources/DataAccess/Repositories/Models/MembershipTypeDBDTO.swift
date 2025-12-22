@@ -5,9 +5,9 @@
 //  Created by Цховребова Яна on 12.03.2025.
 //
 
+import Domain
 import Fluent
 import Vapor
-import Domain
 
 public final class MembershipTypeDBDTO: Model {
     public static let schema = "MembershipType"
@@ -41,7 +41,7 @@ extension MembershipTypeDBDTO {
         days: Int
     ) {
         self.init()
-        
+
         self.id = id
         self.name = name
         self.price = price
@@ -63,7 +63,7 @@ extension MembershipTypeDBDTO: Content {}
 extension MembershipTypeDBDTO {
     public convenience init(from membershipType: MembershipType) {
         self.init()
-        
+
         self.id = membershipType.id
         self.name = membershipType.name
         self.price = membershipType.price

@@ -15,8 +15,8 @@ public final class BcryptHasherService: IHasherService {
     public func verify(_ value: String, created hash: String) throws -> Bool {
         return try Bcrypt.verify(value, created: hash)
     }
-    
+
     public init() {}
 }
 
-extension BcryptHasherService: @unchecked Sendable { }
+extension BcryptHasherService: @unchecked Sendable {}

@@ -5,8 +5,8 @@
 //  Created by Цховребова Яна on 19.03.2025.
 //
 
-import Vapor
 import JWT
+import Vapor
 
 public struct AuthPayload: JWTPayload {
     public var id: UUID

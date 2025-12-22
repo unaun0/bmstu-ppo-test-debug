@@ -9,7 +9,7 @@ import Vapor
 
 public final class UserTrainerService {
     private let service: IUserService
-    
+
     public init(userService: IUserService) {
         self.service = userService
     }

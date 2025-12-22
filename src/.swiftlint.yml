@@ -1,0 +1,85 @@
+# .swiftlint.yml
+
+included:
+  - Sources
+
+cyclomatic_complexity:
+  warning: 10
+  error: 15
+
+function_body_length:
+  warning: 40
+  error: 100
+  
+function_parameter_count:
+  warning: 5
+  error: 10
+  
+type_body_length:
+  warning: 300
+  error: 500
+
+file_length:
+  warning: 400
+  error: 600
+  
+line_length:
+  warning: 120
+  error: 150
+
+opening_brace:
+  severity: error
+  ignore_multiline_function_signatures: false
+
+identifier_name:
+  min_length: 3
+  max_length: 50
+  excluded:
+    - id
+    - url
+    - i
+    - j
+    - k
+    - x
+    - y
+    - z
+    - dx
+    - dy
+    - pg
+    - db
+    - mt
+    - t
+    - u
+    - r
+  validates_start_with_lowercase: true
+
+type_name:
+  min_length: 3
+  max_length: 50
+  validates_start_with_lowercase: false
+
+todo:
+  severity: warning
+
+opt_in_rules:
+  - empty_count
+  - empty_string
+  - vertical_whitespace
+  - force_unwrapping
+  
+force_unwrapping:
+  severity: warning
+
+excluded:
+  - .build
+  - Package.swift
+  - DerivedData
+  - Tests
+  - Public
+  - Shared
+  - TestScripts
+  - Resources
+  - Sources/App/Config
+  - Sources/App/Logger
+  - Sources/App/routes.swift
+  - Sources/Domain/Extensions

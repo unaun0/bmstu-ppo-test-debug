@@ -38,4 +38,3 @@ extension TrainingRoom: Equatable {
 // MARK: - TrainingRoom Sendable
 
 extension TrainingRoom: @unchecked Sendable {}
-

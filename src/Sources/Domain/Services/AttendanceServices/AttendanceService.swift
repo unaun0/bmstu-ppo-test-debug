@@ -19,7 +19,7 @@ public final class AttendanceService: IAttendanceService {
         let attendances = try await repository.find(
             trainingId: data.trainingId
         ).filter { $0.membershipId == data.membershipId }
-        if attendances.count != 0 {
+        if !attendances.isEmpty {
             throw AttendanceError.invalidMembershipTrainingUnique
         }
         let attendance = Attendance(
@@ -31,8 +31,10 @@ public final class AttendanceService: IAttendanceService {
         try await repository.create(attendance)
         return attendance
     }
-    
-    public func update(id: UUID, with data: AttendanceUpdateDTO) async throws -> Attendance? {
+
+    public func update(
+        id: UUID, with data: AttendanceUpdateDTO
+    ) async throws -> Attendance? {
         guard let attendance = try await repository.find(id: id)
         else { throw AttendanceError.attendanceNotFound }
         var trainingChanged = false
@@ -50,7 +52,7 @@ public final class AttendanceService: IAttendanceService {
                 trainingId: attendance.trainingId
             ).filter { $0.id != attendance.id }
                 .filter { $0.membershipId == attendance.membershipId }
-            if attendances.count != 0 {
+            if !attendances.isEmpty {
                 throw AttendanceError.invalidMembershipTrainingUnique
             }
         }
@@ -58,7 +60,7 @@ public final class AttendanceService: IAttendanceService {
             attendance.status = status
         }
         try await repository.update(attendance)
-        
+
         return attendance
     }
 
@@ -79,7 +81,7 @@ public final class AttendanceService: IAttendanceService {
     }
 
     public func delete(id: UUID) async throws {
-        guard let _ = try await repository.find(id: id) else {
+        guard (try await repository.find(id: id)) != nil else {
             throw AttendanceError.attendanceNotFound
         }
         try await repository.delete(id: id)

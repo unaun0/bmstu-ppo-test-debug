@@ -41,4 +41,3 @@ struct AppConfig: Content {
 struct AppConfigKey: StorageKey {
     typealias Value = AppConfig
 }
-

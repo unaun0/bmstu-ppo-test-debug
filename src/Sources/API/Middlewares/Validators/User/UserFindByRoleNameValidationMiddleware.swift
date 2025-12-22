@@ -5,12 +5,12 @@
 //  Created by Цховребова Яна on 11.04.2025.
 //
 
-import Vapor
 import Domain
+import Vapor
 
 public struct UserRoleNameValidationMiddleware: AsyncMiddleware {
     public init() {}
-    
+
     public func respond(
         to request: Request,
         chainingTo next: AsyncResponder

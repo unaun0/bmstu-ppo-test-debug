@@ -5,9 +5,9 @@
 //  Created by Цховребова Яна on 18.04.2025.
 //
 
+import Domain
 import Fluent
 import Vapor
-import Domain
 
 public final class AttendanceRepository {
     private let db: Database

@@ -31,9 +31,11 @@ public final class TrainingTrainerService {
 
 extension TrainingTrainerService: ITrainingTrainerService {
     public func findAllTrainings(userId: UUID) async throws -> [TrainingInfoDTO] {
-        guard let trainer = try await trService.find(
-            userId: userId
-        ) else {
+        guard
+            let trainer = try await trService.find(
+                userId: userId
+            )
+        else {
             throw TrainingError.invalidTrainer
         }
         let allTrainings = try await tService.find(trainerId: trainer.id)
@@ -71,12 +73,12 @@ extension TrainingTrainerService: ITrainingTrainerService {
         return result
     }
 
-    public func findAvailableTrainings(userId: UUID) async throws
-        -> [TrainingInfoDTO]
-    {
-        guard let trainer = try await trService.find(
-            userId: userId
-        ) else {
+    public func findAvailableTrainings(userId: UUID) async throws -> [TrainingInfoDTO] {
+        guard
+            let trainer = try await trService.find(
+                userId: userId
+            )
+        else {
             throw TrainingError.invalidTrainer
         }
         let allTrainings = try await tService.find(trainerId: trainer.id)
@@ -94,7 +96,7 @@ extension TrainingTrainerService: ITrainingTrainerService {
             }
 
             let trainerDTO = TrainerInfoDTO(
-                id: trainer .id,
+                id: trainer.id,
                 userId: u.id,
                 description: trainer.description,
                 firstName: u.firstName,

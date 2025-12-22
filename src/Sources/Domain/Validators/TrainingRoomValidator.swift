@@ -9,7 +9,7 @@ import Foundation
 
 public struct TrainingRoomValidator {
     public static let maxNameLength = 256
-    
+
     public static func validate(name: String) -> Bool {
         (!name.isEmpty) && (name.count < maxNameLength)
     }
@@ -18,4 +18,3 @@ public struct TrainingRoomValidator {
         capacity > 0
     }
 }
-

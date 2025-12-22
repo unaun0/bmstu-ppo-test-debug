@@ -5,9 +5,9 @@
 //  Created by Цховребова Яна on 18.04.2025.
 //
 
+import Domain
 import Fluent
 import Vapor
-import Domain
 
 public final class AttendanceDBDTO: Model {
     public static let schema = "Attendance"
@@ -37,7 +37,7 @@ extension AttendanceDBDTO {
         status: String
     ) {
         self.init()
-        
+
         self.id = id
         self.membershipId = membershipId
         self.trainingId = trainingId
@@ -58,7 +58,7 @@ extension AttendanceDBDTO: Content {}
 extension AttendanceDBDTO {
     public convenience init(from attendance: Attendance) {
         self.init()
-        
+
         self.id = attendance.id
         self.membershipId = attendance.membershipId
         self.trainingId = attendance.trainingId

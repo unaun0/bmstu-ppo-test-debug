@@ -5,15 +5,15 @@
 //  Created by Цховребова Яна on 10.05.2025.
 //
 
+import Domain
 import Vapor
 import VaporToOpenAPI
-import Domain
 
 public final class TrainerUserController: RouteCollection {
     private let service: ITrainerUserService
     private let jwtMiddleware: JWTMiddleware
     private let uuidMiddleware: UUIDValidationMiddleware
-    
+
     public init(
         service: ITrainerUserService,
         jwtMiddleware: JWTMiddleware,
@@ -23,11 +23,11 @@ public final class TrainerUserController: RouteCollection {
         self.jwtMiddleware = jwtMiddleware
         self.uuidMiddleware = uuidMiddleware
     }
-    
+
     public func boot(routes: RoutesBuilder) throws {
         let trainerRoutes = routes.grouped("user", "trainers")
             .grouped(jwtMiddleware)
-        
+
         trainerRoutes.grouped(uuidMiddleware).get(
             ":id",
             use: getTrainerById

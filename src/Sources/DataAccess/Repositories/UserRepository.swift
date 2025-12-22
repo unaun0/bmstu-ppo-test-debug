@@ -4,13 +4,13 @@
 //
 //  Created by Цховребова Яна on 10.03.2025.
 
+import Domain
 import Fluent
 import Vapor
-import Domain
 
 public final class UserRepository {
     private let db: Database
-    
+
     public init(db: Database) {
         self.db = db
     }
@@ -24,12 +24,15 @@ extension UserRepository: IUserRepository {
     }
 
     public func update(_ user: User) async throws {
-        guard let existing = try await UserDBDTO.find(
-            user.id, on: db
-        ) else {
+        guard
+            let existing = try await UserDBDTO.find(
+                user.id,
+                on: db
+            )
+        else {
             throw UserRepositoryError.userNotFound
         }
-        
+
         existing.email = user.email
         existing.phoneNumber = user.phoneNumber
         existing.password = user.password
@@ -38,7 +41,7 @@ extension UserRepository: IUserRepository {
         existing.birthDate = user.birthDate
         existing.gender = user.gender.rawValue
         existing.role = user.role.rawValue
-        
+
         try await existing.update(on: db)
     }
 
@@ -57,7 +60,7 @@ extension UserRepository: IUserRepository {
             \.$role == role
         ).all().compactMap { $0.toUser() }
     }
-    
+
     public func find(phoneNumber: String) async throws -> User? {
         try await UserDBDTO.query(
             on: db
@@ -80,13 +83,15 @@ extension UserRepository: IUserRepository {
     }
 
     public func delete(id: UUID) async throws {
-        guard let user = try await UserDBDTO.find(
-            id,
-            on: db
-        ) else {
+        guard
+            let user = try await UserDBDTO.find(
+                id,
+                on: db
+            )
+        else {
             throw UserRepositoryError.userNotFound
         }
-        
+
         try await user.delete(on: db)
     }
 }

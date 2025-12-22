@@ -32,11 +32,15 @@ extension LoggingSystem {
 
         let terminalHandler = StreamLogHandler.standardOutput(label: label)
         let fileHandler = try FileLogHandler(
-            label: label, logLevel: level, filePath: logFilePath)
+            label: label,
+            logLevel: level,
+            filePath: logFilePath
+        )
         let multiHandler = MultiLogHandler(
-            terminalHandler: terminalHandler, fileHandler: fileHandler)
-
-        LoggingSystem.bootstrap { label in
+            terminalHandler: terminalHandler,
+            fileHandler: fileHandler
+        )
+        LoggingSystem.bootstrap { _ in
             return multiHandler
         }
     }

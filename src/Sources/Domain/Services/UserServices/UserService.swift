@@ -10,7 +10,7 @@ import Vapor
 public final class UserService {
     private let userRepository: IUserRepository
     private let passwordHasher: IHasherService
-    
+
     public init(
         userRepository: IUserRepository,
         passwordHasher: IHasherService
@@ -30,9 +30,11 @@ extension UserService: IUserService {
         if try await userRepository.find(phoneNumber: data.phoneNumber) != nil {
             throw UserError.phoneNumberAlreadyExists
         }
-        guard let date = data.birthDate.toDate(
-            format: ValidationRegex.DateFormat.format
-        ) else {
+        guard
+            let date = data.birthDate.toDate(
+                format: ValidationRegex.DateFormat.format
+            )
+        else {
             throw UserError.invalidBirthDate
         }
         let user = User(
@@ -50,7 +52,7 @@ extension UserService: IUserService {
 
         return user
     }
-    
+
     public func find(role: String) async throws -> [User] {
         try await userRepository.find(role: role)
     }
@@ -83,9 +85,10 @@ extension UserService: IUserService {
             user.password = try passwordHasher.hash(password)
         }
         if let birthDate = data.birthDate {
-            guard let date = birthDate.toDate(
-                format: ValidationRegex.DateFormat.format
-            )
+            guard
+                let date = birthDate.toDate(
+                    format: ValidationRegex.DateFormat.format
+                )
             else { throw UserError.invalidBirthDate }
             user.birthDate = date
         }
@@ -113,7 +116,7 @@ extension UserService: IUserService {
     }
 
     public func delete(id: UUID) async throws {
-        guard let _ = try await userRepository.find(id: id) else {
+        guard (try await userRepository.find(id: id)) != nil else {
             throw UserError.userNotFound
         }
         try await userRepository.delete(id: id)

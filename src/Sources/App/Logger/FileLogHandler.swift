@@ -14,8 +14,7 @@ final class FileLogHandler: LogHandler, @unchecked Sendable {
     internal var logLevel: Logger.Level
     internal var metadata: Logger.Metadata = [:]
 
-    init(label: String, logLevel: Logger.Level = .info, filePath: String) throws
-    {
+    init(label: String, logLevel: Logger.Level = .info, filePath: String) throws {
         self.label = label
         self.logLevel = logLevel
 
@@ -43,9 +42,13 @@ final class FileLogHandler: LogHandler, @unchecked Sendable {
     }
 
     func log(
-        level: Logger.Level, message: Logger.Message,
-        metadata: Logger.Metadata?, source: String, file: String,
-        function: String, line: UInt
+        level: Logger.Level,
+        message: Logger.Message,
+        metadata: Logger.Metadata?,
+        source: String,
+        file: String,
+        function: String,
+        line: UInt
     ) {
         guard level >= self.logLevel else { return }
 

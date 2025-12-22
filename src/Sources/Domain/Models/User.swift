@@ -80,7 +80,8 @@ extension User: Equatable {
     public static func == (lhs: User, rhs: User) -> Bool {
         return lhs.id == rhs.id
             && Calendar.current.isDate(
-                lhs.birthDate, inSameDayAs: rhs.birthDate
+                lhs.birthDate,
+                inSameDayAs: rhs.birthDate
             )
             && lhs.email == rhs.email
             && lhs.phoneNumber == rhs.phoneNumber

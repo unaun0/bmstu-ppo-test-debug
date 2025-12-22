@@ -5,9 +5,9 @@
 //  Created by Цховребова Яна on 13.04.2025.
 //
 
+import Domain
 import Fluent
 import Vapor
-import Domain
 
 public final class MembershipTypeRepository {
     private let db: Database
@@ -45,7 +45,8 @@ extension MembershipTypeRepository: IMembershipTypeRepository {
 
     public func find(id: UUID) async throws -> MembershipType? {
         try await MembershipTypeDBDTO.find(
-            id, on: db
+            id,
+            on: db
         )?.toMembershipType()
     }
 
