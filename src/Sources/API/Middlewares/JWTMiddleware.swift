@@ -11,8 +11,7 @@ import Vapor
 public struct JWTMiddleware: AsyncMiddleware {
     private let userService: IUserService
 
-    public init(userService: IUserService)
-    {
+    public init(userService: IUserService) {
         self.userService = userService
     }
 
