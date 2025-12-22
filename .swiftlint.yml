@@ -70,15 +70,15 @@ force_unwrapping:
   severity: warning
 
 excluded:
-  - .build
-  - Package.swift
-  - DerivedData
-  - Tests
-  - Public
-  - Shared
-  - TestScripts
-  - Resources
-  - Sources/App/Config
-  - Sources/App/Logger
-  - Sources/App/routes.swift
-  - Sources/Domain/Extensions
+  - src/.build
+  - src/Package.swift
+  - src/DerivedData
+  - src/Tests
+  - src/Public
+  - src/Shared
+  - src/TestScripts
+  - src/Resources
+  - src/Sources/App/Config
+  - src/Sources/App/Logger
+  - src/Sources/App/routes.swift
+  - src/Sources/Domain/Extensions
