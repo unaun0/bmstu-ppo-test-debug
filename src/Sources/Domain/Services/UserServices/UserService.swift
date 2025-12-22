@@ -23,20 +23,13 @@ public final class UserService {
 // MARK: - IUserService
 
 extension UserService: IUserService {
+
     public func create(_ data: UserCreateDTO) async throws -> User? {
-        if try await userRepository.find(email: data.email) != nil {
-            throw UserError.emailAlreadyExists
-        }
-        if try await userRepository.find(phoneNumber: data.phoneNumber) != nil {
-            throw UserError.phoneNumberAlreadyExists
-        }
-        guard
-            let date = data.birthDate.toDate(
-                format: ValidationRegex.DateFormat.format
-            )
-        else {
+        try await validateNewUser(data)
+        guard let date = data.birthDate.toDate(format: ValidationRegex.DateFormat.format) else {
             throw UserError.invalidBirthDate
         }
+
         let user = User(
             id: UUID(),
             email: data.email,
@@ -48,59 +41,88 @@ extension UserService: IUserService {
             gender: data.gender,
             role: data.role
         )
-        try await userRepository.create(user)
 
+        try await userRepository.create(user)
         return user
     }
 
-    public func find(role: String) async throws -> [User] {
-        try await userRepository.find(role: role)
+    private func validateNewUser(_ data: UserCreateDTO) async throws {
+        if try await userRepository.find(email: data.email) != nil {
+            throw UserError.emailAlreadyExists
+        }
+        if try await userRepository.find(phoneNumber: data.phoneNumber) != nil {
+            throw UserError.phoneNumberAlreadyExists
+        }
     }
 
     public func update(id: UUID, with data: UserUpdateDTO) async throws -> User? {
         guard var user = try await userRepository.find(id: id) else {
             throw UserError.userNotFound
         }
-        if let firstName = data.firstName {
-            user.firstName = firstName
-        }
-        if let lastName = data.lastName {
-            user.lastName = lastName
-        }
+
+        try await applyUpdate(to: &user, with: data)
+        try await userRepository.update(user)
+        return user
+    }
+
+    private func applyUpdate(to user: inout User, with data: UserUpdateDTO) async throws {
+        try await updateName(for: &user, data: data)
+        try await updateEmail(for: &user, data: data)
+        try await updatePhone(for: &user, data: data)
+        try await updatePassword(for: &user, data: data)
+        try await updateBirthDate(for: &user, data: data)
+        updateGender(for: &user, data: data)
+        updateRole(for: &user, data: data)
+    }
+
+    private func updateName(for user: inout User, data: UserUpdateDTO) async throws {
+        if let firstName = data.firstName { user.firstName = firstName }
+        if let lastName = data.lastName { user.lastName = lastName }
+    }
+
+    private func updateEmail(for user: inout User, data: UserUpdateDTO) async throws {
         if let email = data.email {
             if try await userRepository.find(email: email) != nil {
                 throw UserError.emailAlreadyExists
             }
             user.email = email
         }
+    }
+
+    private func updatePhone(for user: inout User, data: UserUpdateDTO) async throws {
         if let phoneNumber = data.phoneNumber {
-            if try await userRepository.find(
-                phoneNumber: phoneNumber
-            ) != nil {
+            if try await userRepository.find(phoneNumber: phoneNumber) != nil {
                 throw UserError.phoneNumberAlreadyExists
             }
             user.phoneNumber = phoneNumber
         }
+    }
+
+    private func updatePassword(for user: inout User, data: UserUpdateDTO) async throws {
         if let password = data.password {
             user.password = try passwordHasher.hash(password)
         }
+    }
+
+    private func updateBirthDate(for user: inout User, data: UserUpdateDTO) async throws {
         if let birthDate = data.birthDate {
-            guard
-                let date = birthDate.toDate(
-                    format: ValidationRegex.DateFormat.format
-                )
-            else { throw UserError.invalidBirthDate }
+            guard let date = birthDate.toDate(format: ValidationRegex.DateFormat.format) else {
+                throw UserError.invalidBirthDate
+            }
             user.birthDate = date
         }
-        if let gender = data.gender {
-            user.gender = gender
-        }
-        if let role = data.role {
-            user.role = role
-        }
-        try await userRepository.update(user)
+    }
 
-        return user
+    private func updateGender(for user: inout User, data: UserUpdateDTO) {
+        if let gender = data.gender { user.gender = gender }
+    }
+
+    private func updateRole(for user: inout User, data: UserUpdateDTO) {
+        if let role = data.role { user.role = role }
+    }
+
+    public func find(role: String) async throws -> [User] {
+        try await userRepository.find(role: role)
     }
 
     public func find(email: String) async throws -> User? {
