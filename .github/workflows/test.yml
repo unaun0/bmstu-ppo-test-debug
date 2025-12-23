@@ -133,7 +133,7 @@ jobs:
       - name: Run E2E Test for GNews (Mock Server)
         working-directory: src
         run: |
-          docker build -t mock-gnews src/TestScripts/MockServer
+          docker build -t mock-gnews ./TestScripts/MockServer
           docker run -d \
             --name mock-gnews-container \
             -p 8080:8080 \
