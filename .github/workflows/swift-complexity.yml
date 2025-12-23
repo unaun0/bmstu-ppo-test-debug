@@ -35,7 +35,11 @@ jobs:
             --format json \
             --cognitive-only \
             > $COMPLEXITY_JSON
-
+            
+      - name: Make dir for Result
+        run: |
+          mkdir -p $COMPLEXITY_HTML
+          
       - name: Generate HTML report
         run: |
           python3 src/TestScripts/comp_report.py \
