@@ -13,6 +13,7 @@ jobs:
 
     env:
       CONFIG_PATH: ./Shared/config.json
+      CONFIG_PATH_TRUE_API: ./Shared/config2.json
       RUN_DIR: TestResults
       ALLURE_HISTORY: allure-history
       ALLURE_REPORT_DIR: allure-report
@@ -135,6 +136,26 @@ jobs:
           fi
           echo "E2E_TEST_EXIT_CODE=$E2E_TEST_EXIT_CODE" >> $GITHUB_ENV
           python3 TestScripts/fix_report.py "../$RUN_DIR/e2e-tests.xml" E2ETests || true
+        
+      # ---------- E2E TESTS ----------
+      - name: Run E2E Test for GNews
+        working-directory: src
+        run: |
+          E2E_TEST_EXIT_CODE2=0
+          if [ "$E2E_TEST_EXIT_CODE" -ne 0 ]; then
+              E2E_TEST_EXIT_CODE2=$E2E_TEST_EXIT_CODE
+          else
+              if ! swift test --skip-build \
+                --filter NewsE2ETests \
+                --parallel \
+                --num-workers 1 \
+                --disable-swift-testing \
+                --xunit-output "../$RUN_DIR/e2e-tests2.xml"; then
+                  E2E_TEST_EXIT_CODE2=1
+              fi
+          fi
+          echo "E2E_TEST_EXIT_CODE2=$E2E_TEST_EXIT_CODE2" >> $GITHUB_ENV
+          python3 TestScripts/fix_report.py "../$RUN_DIR/e2e-tests2.xml" E2ETests || true
 
       # ---------- Upload Test Results ----------
       - name: Upload test results
