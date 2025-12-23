@@ -43,7 +43,9 @@ jobs:
 
       # ---------- Install SwiftLint ----------
       - name: Install SwiftLint
-        run: brew install swiftlint
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y swiftlint
 
       # ---------- SwiftLint ----------
       - name: Run SwiftLint
