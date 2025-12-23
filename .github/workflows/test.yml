@@ -26,11 +26,20 @@ jobs:
           POSTGRES_DB: testdb
         ports:
           - 5433:5432
+      
+      mock-gnews:
+        image: mock-gnews
+        ports:
+          - 8000:8000
 
     steps:
       # ---------- Checkout ----------
       - name: Checkout repository
         uses: actions/checkout@v5
+
+      - name: Build mock gnews server
+        run: |
+          docker build -t mock-gnews src/TestScripts/MockServer
 
       # ---------- Swift Setup ----------
       - name: Set up Swift
