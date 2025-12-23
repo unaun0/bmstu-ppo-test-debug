@@ -1,0 +1,40 @@
+name: Swift Complexity
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  complexity:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Swift
+        uses: SwiftyLab/setup-swift@latest
+        with:
+          swift-version: "6.1"
+
+      - name: Build swift-complexity
+        run: |
+          git clone https://github.com/fummicc1/swift-complexity.git
+          cd swift-complexity
+          swift build -c release
+          sudo cp .build/release/SwiftComplexityCLI /usr/local/bin/swift-complexity
+
+      - name: Generate cognitive complexity report
+        run: |
+          swift-complexity Sources \
+            --recursive \
+            --format json \
+            --cognitive-only \
+            > complexity.json
+
+      - name: Upload complexity report
+        uses: actions/upload-artifact@v4
+        with:
+          name: cognitive-complexity
+          path: complexity.json
