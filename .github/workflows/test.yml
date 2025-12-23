@@ -26,20 +26,19 @@ jobs:
           POSTGRES_DB: testdb
         ports:
           - 5433:5432
-      
-      mock-gnews:
-        image: mock-gnews
-        ports:
-          - 8000:8000
 
     steps:
       # ---------- Checkout ----------
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Build mock gnews server
+      - name: Build and run mock gnews server
         run: |
           docker build -t mock-gnews src/TestScripts/MockServer
+          docker run -d \
+            --name mock-gnews-container \
+            -p 8080:8080 \
+            mock-gnews
 
       # ---------- Install SwiftLint ----------
       - name: Run SwiftLint
