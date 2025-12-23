@@ -32,6 +32,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
+      # ---------- Install SwiftLint ----------
+      - name: Install Homebrew and SwiftLint
+        run: |
+          if ! command -v brew >/dev/null 2>&1; then
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+            echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> $GITHUB_ENV
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+          fi
+          brew install swiftlint
+  
       # ---------- Swift Setup ----------
       - name: Set up Swift
         uses: SwiftyLab/setup-swift@latest
@@ -41,13 +51,6 @@ jobs:
       - name: Show Swift version
         run: swift --version
 
-      # ---------- Install SwiftLint ----------
-      - name: Install SwiftLint
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y swiftlint
-
-      # ---------- SwiftLint ----------
       - name: Run SwiftLint
         run: |
           if ! swiftlint lint --strict --config .swiftlint.yml; then
