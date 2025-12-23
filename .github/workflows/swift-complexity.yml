@@ -26,7 +26,7 @@ jobs:
 
       - name: Generate cognitive complexity report
         run: |
-          swift-complexity Sources \
+          swift-complexity src/Sources \
             --recursive \
             --format json \
             --cognitive-only \
