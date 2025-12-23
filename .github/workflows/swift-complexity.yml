@@ -3,7 +3,6 @@ name: Swift Complexity
 on:
   pull_request:
   push:
-    branches: [ main ]
 
 jobs:
   complexity:
