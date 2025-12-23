@@ -41,6 +41,18 @@ jobs:
       - name: Show Swift version
         run: swift --version
 
+      # ---------- Install SwiftLint ----------
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      # ---------- SwiftLint ----------
+      - name: Run SwiftLint
+        run: |
+          if ! swiftlint lint --strict --config .swiftlint.yml; then
+            echo "SwiftLint failed. Fix lint issues before running tests."
+            exit 1
+          fi
+
       # ---------- Permissions ----------
       - name: Set permissions for scripts
         run: |

@@ -4,7 +4,8 @@ included:
   - src/Sources
 
 cyclomatic_complexity:
-  error: 10
+  warning: 10
+  error: 11
 
 function_body_length:
   warning: 40
