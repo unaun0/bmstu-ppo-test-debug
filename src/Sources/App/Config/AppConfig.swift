@@ -25,6 +25,16 @@ struct AppConfig: Content {
         let logLevel: String
     }
 
+    struct NewsConfig: Content {
+        let realApiKey: String
+        let realBaseURL: String
+        let mockApiKey: String
+        let mockBaseURL: String
+        let useMock: Bool
+    }
+
+    let gnews: NewsConfig
+
     let database: [String: DatabaseConfig]
     let jwt: JWTConfig
     let logging: LoggingConfig

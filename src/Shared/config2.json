@@ -28,7 +28,7 @@
         "realBaseURL": "https://gnews.io/api/v4/top-headlines",
         "mockApiKey": "test-key",
         "mockBaseURL": "http://localhost:8000/v4/top-headlines",
-        "useMock": true
+        "useMock": false
     }
 }
 

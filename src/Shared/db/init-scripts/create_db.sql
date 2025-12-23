@@ -1,6 +1,7 @@
 -- Удаление всех отношений
 
 DROP TABLE IF EXISTS "Attendance";
+DROP TABLE IF EXISTS "UserTwoFactor";
 DROP TABLE IF EXISTS "Training";
 DROP TABLE IF EXISTS "Membership";
 DROP TABLE IF EXISTS "TrainingRoom";
@@ -21,6 +22,18 @@ CREATE TABLE "User" (
     gender             TEXT,
     birth_date         DATE,
     "role"             TEXT
+);
+
+curl "https://gnews.io/api/v4/top-headlines?topic=health&lang=ru&max=5&apikey=2b6df82f9c2b7b32543e4b87d47993c8"
+
+CREATE TABLE "UserTwoFactor" (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES "User"(id) ON DELETE CASCADE,
+    code TEXT NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    failed_attempts INT DEFAULT 0,
+    is_locked BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT now()
 );
 
 -- Тренер

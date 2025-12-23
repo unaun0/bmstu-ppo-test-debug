@@ -72,11 +72,9 @@ final class DemoE2ETests: XCTestCase {
                     .filter(\.$id == newUserUUID!).first()
                 XCTAssertNotNil(createdUser)
                 XCTAssertEqual(createdUser?.email, demoData.newUserRegisterDTO.email)
-                // ... остальные ассершены по пользователю (можешь оставить или убрать)
             }
         )
 
-        // Добавление абонемента созданному пользователю
         try await running.test(.POST, "/admin/memberships",
             beforeRequest: { req in
                 req.headers.bearerAuthorization = BearerAuthorization(token: tokenValue!)
@@ -95,7 +93,6 @@ final class DemoE2ETests: XCTestCase {
             }
         )
 
-        // Запись пользователя на тренировку по созданному абонементу
         try await running.test(.POST, "/admin/attendances",
             beforeRequest: { req in
                 req.headers.bearerAuthorization = BearerAuthorization(token: tokenValue!)

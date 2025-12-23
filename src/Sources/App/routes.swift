@@ -48,6 +48,11 @@ private func registerAuthRoutes(_ app: Application) throws {
         loginMiddleware: app.loginValidationMiddleware!
     )
     try app.register(collection: authController)
+    
+    let newsController = NewsController(
+        service: app.newsService!
+    )
+    try app.register(collection: newsController)
 }
 
 // MARK: - User Routes

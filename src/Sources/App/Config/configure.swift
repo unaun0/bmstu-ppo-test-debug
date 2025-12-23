@@ -40,7 +40,24 @@ public func configure(_ app: Application) async throws {
     configureServices(app, config: app.appConfig)
     configureJWTSecretKey(app, config: app.appConfig)
     configureMiddlewares(app)
+    
+    let gnewsConfig = app.appConfig.gnews
 
+    if gnewsConfig.useMock {
+        app.gnewsClient = GNewsClientAsyncImpl(
+            apiKey: gnewsConfig.mockApiKey,
+            baseURL: gnewsConfig.mockBaseURL
+        )
+    } else {
+        app.gnewsClient = GNewsClientAsyncImpl(
+            apiKey: gnewsConfig.realApiKey,
+            baseURL: gnewsConfig.realBaseURL
+        )
+    }
+
+    app.newsService = NewsService(
+        client: app.gnewsClient!
+    )
     try routes(app)
 }
 

@@ -4,6 +4,28 @@ import Fluent
 import Vapor
 
 extension Application {
+    private struct NewsServiceKey: StorageKey {
+        typealias Value = NewsServiceProtocol
+    }
+
+    var newsService: NewsServiceProtocol? {
+        get { self.storage[NewsServiceKey.self] }
+        set { self.storage[NewsServiceKey.self] = newValue }
+    }
+}
+
+extension Application {
+    private struct GNewsClientKey: StorageKey {
+        typealias Value = NewsClient
+    }
+
+    var gnewsClient: NewsClient? {
+        get { self.storage[GNewsClientKey.self] }
+        set { self.storage[GNewsClientKey.self] = newValue }
+    }
+}
+
+extension Application {
     private struct UserRepositoryKey: StorageKey {
         typealias Value = IUserRepository
     }
