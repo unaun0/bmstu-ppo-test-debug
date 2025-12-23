@@ -8,6 +8,10 @@ jobs:
   complexity:
     runs-on: macos-14
 
+    env:
+      COMPLEXITY_JSON: complexity.json
+      COMPLEXITY_HTML: complexity-report
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,10 +34,25 @@ jobs:
             --recursive \
             --format json \
             --cognitive-only \
-            > complexity.json
+            > $COMPLEXITY_JSON
 
-      - name: Upload complexity report
+      - name: Generate HTML report
+        run: |
+          python3 src/TestScripts/comp_report.py \
+            --input $COMPLEXITY_JSON \
+            --output $COMPLEXITY_HTML/report.html
+
+      - name: Upload complexity artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: cognitive-complexity
-          path: complexity.json
+          name: complexity-artifacts
+          path: |
+            $COMPLEXITY_JSON
+            $COMPLEXITY_HTML/
+      
+      - name: Publish Complexity Report to Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: $COMPLEXITY_HTML
+          publish_branch: complexity-pages
