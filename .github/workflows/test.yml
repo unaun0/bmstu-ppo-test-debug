@@ -140,7 +140,7 @@ jobs:
           path: ${{ env.ALLURE_HISTORY }}
 
       - name: Build Allure Report
-        uses: simple-elf/allure-report-action@v1.9
+        uses: simple-elf/allure-report-action@master
         if: always()
         with:
           gh_pages: ${{ env.ALLURE_HISTORY }}
