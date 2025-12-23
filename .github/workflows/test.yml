@@ -125,7 +125,7 @@ jobs:
           else
               sh TestScripts/clean_db.sh || exit 1
               if ! swift test --skip-build \
-                --filter E2ETests \
+                --filter DemoE2ETests \
                 --parallel \
                 --num-workers 1 \
                 --disable-swift-testing \
@@ -138,7 +138,7 @@ jobs:
           python3 TestScripts/fix_report.py "../$RUN_DIR/e2e-tests.xml" E2ETests || true
         
       # ---------- E2E TESTS ----------
-      - name: Run E2E Test for GNews
+      - name: Run E2E Test for GNews (Mock Server)
         working-directory: src
         run: |
           E2E_TEST_EXIT_CODE2=0
@@ -156,6 +156,26 @@ jobs:
           fi
           echo "E2E_TEST_EXIT_CODE2=$E2E_TEST_EXIT_CODE2" >> $GITHUB_ENV
           python3 TestScripts/fix_report.py "../$RUN_DIR/e2e-tests2.xml" E2ETests || true
+
+      - name: Run E2E Test for GNews (Real Server)
+        working-directory: src
+        run: |
+          E2E_TEST_EXIT_CODE3=0
+          if [ "$E2E_TEST_EXIT_CODE2" -ne 0 ]; then
+              E2E_TEST_EXIT_CODE3=$E2E_TEST_EXIT_CODE2
+          else
+              export CONFIG_PATH="$CONFIG_PATH_TRUE_API"
+              if ! swift test --skip-build \
+                --filter NewsE2ETests \
+                --parallel \
+                --num-workers 1 \
+                --disable-swift-testing \
+                --xunit-output "../$RUN_DIR/e2e-tests3.xml"; then
+                  E2E_TEST_EXIT_CODE3=1
+              fi
+          fi
+          echo "E2E_TEST_EXIT_CODE3=$E2E_TEST_EXIT_CODE3" >> $GITHUB_ENV
+          python3 TestScripts/fix_report.py "../$RUN_DIR/e2e-tests3.xml" E2ETests || true
 
       # ---------- Upload Test Results ----------
       - name: Upload test results
